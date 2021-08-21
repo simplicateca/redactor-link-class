@@ -21,14 +21,15 @@
          * listen for when the link module changes or inserts new links
          */
         onlink: {
-            // changed just passes a regular DOM object
+
+            // on 'changed' passes a regular browser DOM object
             changed: function(e) {
                 if( this.opts.linkClasses ) {
                     e[0].className = this.selectedClass
                 }
             },
 
-            // but inserted passes a Redactor DOM object
+            // but on 'inserted' passes a Redactor DOM object
             // https://imperavi.com/redactor/docs/api-services/dom/#s-dom
             inserted: function(e) {
                 if( this.opts.linkClasses ) {
@@ -64,11 +65,11 @@
         _setup: function () {            
             if (0 === (e = this.$modal.find("#redactor-link-styles")).length) {
                 
-                var n = this.$modal.getBody();
-                fi = t.dom('<div class="form-item" />');
-                lb = t.dom('<label for="redactor-links-styles">' + this.lang.get('linkStyle') + '</label>');
-                se = t.dom('<select id="redactor-links-styles" name="class"></select></div>');
-                opt = t.dom("<option value=''></option>");
+                var fi  = t.dom('<div class="form-item" />');
+                var lb  = t.dom('<label for="redactor-links-styles">' + this.lang.get('linkStyle') + '</label>');
+                
+                var se  = t.dom('<select id="redactor-links-styles" name="class"></select></div>');
+                var opt = t.dom("<option value=''></option>");
                 se.append(opt);
 
                 this.opts.linkClasses.forEach(function(element) {
@@ -85,7 +86,7 @@
                 if( $target ) {
                     $target.before(fi)
                 } else {
-                    n.children().first().append(fi);
+                    this.$modal.getBody().children().first().append(fi);
                 }
             }
         },
@@ -106,7 +107,7 @@
 
         
         /**
-         * when the class name <select> changes, store its value
+         * save the value anytime the class name <select> changes
          */
         _select: function(i) {
             var data = this.$form.getData();
@@ -115,34 +116,12 @@
 
 
         /**
-         * find the first currently selected link in the editor (if one exists)
+         * find the first currently selected link in the editor (if one exists).
+         * useful for setting thje class name <select> when editing existing links.
          */
         _getCurrent: function () {
             return this.selection.getInlinesAllSelected({ tags: ["a"] })[0];
         },
 
-
-        /**
-         * removes all classes from DOM element
-         */
-        _removeClasses: function(e) {
-            if( this.opts.linkClasses ) {
-                this.opts.linkClasses.forEach(function(styleOption) {
-                    styleOption.class.split(" ").forEach( function(className) {
-                        e[0].classList.remove( className );
-                    })
-                });
-            }       
-        },
-
-        
-        /**
-         * adds the currently selected linkClass to the DOM element
-         */
-        _addClasses: function(e) {
-            this.selectedClass.split(" ").forEach( function(className) {
-                e[0].classList.add( className ); 
-            });
-        }
     });
 })(Redactor);
